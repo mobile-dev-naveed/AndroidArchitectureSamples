@@ -1,7 +1,7 @@
 package com.naveed.samples.helper.base;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
