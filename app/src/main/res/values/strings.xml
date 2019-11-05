@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Movies App</string>
+    <string name="welcome">Welcome</string>
+    <string name="no_internet">Internet connection error</string>
+    <string name="movieName">Movie : </string>
+    <string name="please_wait">Please wait...</string>
+    <string name="list_by">List by :</string>
+    <string name="fetch">Fetch</string>
+    <string name="search_hint">Search movie</string>
+    <string name="search_movie">Search Movie</string>
+    <string name="star">⭐️</string>
+    <string name="rating">Rating :</string>
+</resources>
