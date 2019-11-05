@@ -41,7 +41,7 @@ class MoviesAdapter(context: Context, moviesList: List<MovieItem>, isGrid: Boole
         val (_, _, _, voteAverage, title, _, posterPath) = mDataList[position]
         holder.title.text = title
         if (posterPath!=null)
-        Glide.with(this.mContext).load("${AppConstants.IMAGE_BASE_URL}$posterPath!!}").into(holder.imageView)
+        Glide.with(this.mContext).load("${AppConstants.IMAGE_BASE_URL}$posterPath").into(holder.imageView)
         holder.tvRating.text = voteAverage.toString() + " " + mContext.getString(R.string.star)
         holder.cardView.setOnClickListener { v ->
             if (itemSelectedListener != null) {

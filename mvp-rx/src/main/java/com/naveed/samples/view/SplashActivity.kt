@@ -1,4 +1,4 @@
-package com.naveed.samples.ui.activities
+package com.naveed.samples.view
 
 import android.os.Bundle
 
@@ -14,7 +14,7 @@ class SplashActivity : SplashBase() {
     }
 
     override fun onDelayComplete() {
-        launchActivity(MainActivity::class.java)
+        launchActivity(MoviesList::class.java)
         finish()
     }
 }

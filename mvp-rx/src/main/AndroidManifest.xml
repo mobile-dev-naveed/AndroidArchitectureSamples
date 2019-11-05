@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.activities.SplashActivity"
+            android:name=".view.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenActionBarStyle">
             <intent-filter>
@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activities.MainActivity"
+            android:name="com.naveed.samples.view.MoviesList"
             android:screenOrientation="portrait">
 
             <meta-data
@@ -32,7 +32,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".ui.activities.MovieDetailActivity"
+            android:name=".view.MovieDetailActivity"
             android:screenOrientation="portrait"></activity>
     </application>
 

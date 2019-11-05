@@ -12,11 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Spinner;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import com.naveed.samples.R;
 /**
@@ -34,22 +30,7 @@ public abstract class BaseActivity extends AppCompatActivity implements DialogIn
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        EventBus.getDefault().register(this);
-        //Log.i("FCM toked","token: "+ FirebaseInstanceId.getInstance().getToken());
-
-       /* if (!(this instanceof Splash)) {
-            String deviceToken = FirebaseInstanceId.getInstance().getToken();
-            if (deviceToken == null || deviceToken.isEmpty()) return;
-            if (!AppSharedPreferences.getInstance(this).isSyncedDeviceToken(deviceToken)) {
-                new RegisterDeviceAsync(this).execute(FirebaseInstanceId.getInstance().getToken());
-            }
-        }*/
 
     }
 
@@ -68,7 +49,6 @@ public abstract class BaseActivity extends AppCompatActivity implements DialogIn
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 
 
@@ -109,14 +89,6 @@ public abstract class BaseActivity extends AppCompatActivity implements DialogIn
         fragmentTransaction.commit();
         mCurrentFragment = fragment;
     }
-
-   /*  public void changeFragmentWithStack(BaseFragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction =
-                fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.container, fragment);
-        fragmentTransaction.commit();
-    }*/
 
 
     public void changeFragment(BaseFragment fragment, boolean addToStack, int childContainerId) {
@@ -165,47 +137,7 @@ public abstract class BaseActivity extends AppCompatActivity implements DialogIn
 
     }
 
-    @Subscribe
-    public void onEvent(String event) {
 
-    }
-
-   // private SingleButtonAlert singleButtonAlert = null;
-
-//    public void showAlertDialog(String message, String btnText) {
-//        showAlertDialog(-1, message, btnText);
-//    }
-//
-//    public void showAlertDialog(int id, String message, String btnText) {
-//        if (singleButtonAlert != null) {
-//            try {
-//                singleButtonAlert.dismiss();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        singleButtonAlert = SingleButtonAlert.newInstance(id, message, btnText);
-//        singleButtonAlert.show(getSupportFragmentManager(), null);
-//        singleButtonAlert.setAlertActionListener(this);
-//    }
-//
-//    @Override
-//    public void onActionDone() {
-//
-//    }
-//
-//    @Override
-//    public void onActionDone(int actionId) {
-//
-//    }
-
-    public void spinnerError(Spinner spinner) {
-
-        if (spinner == null)
-            return;
-        spinner.setBackgroundResource(R.drawable.spinner_error_background);
-        spinner.requestFocus();
-    }
 
 
     protected void hideKeyboard(View view) {

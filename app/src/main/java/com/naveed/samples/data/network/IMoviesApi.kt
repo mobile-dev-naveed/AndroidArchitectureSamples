@@ -2,6 +2,8 @@ package com.naveed.samples.data.network
 
 
 import com.naveed.samples.data.models.ListMoviesResp
+import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,12 +17,12 @@ interface IMoviesApi {
                       @Query("api_key") apiKey: String,
                       @Query("language") language: String,
                       @Query("page") page: Int,
-                      @Query("region") region: String): Call<ListMoviesResp>
+                      @Query("region") region: String): Observable<ListMoviesResp>
 
     @GET("search/movie")
     fun getSearchAbleResultsMoviesList(@Query("api_key") apiKey: String,
                                        @Query("query") language: String,
-                                       @Query("page") page: Int): Call<ListMoviesResp>
+                                       @Query("page") page: Int): Single<ListMoviesResp>
 
 
 }

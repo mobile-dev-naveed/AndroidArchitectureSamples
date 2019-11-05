@@ -16,10 +16,6 @@ public class NetworkConnection {
 	}
 
 	public static boolean isConnection(Context ctx) {
-		/*ConnectivityManager connectivityManager
-		= (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
-        return ni != null && ni.isAvailable() && ni.isConnected();*/
 		return isNetworkConnected(ctx);
 	}
 

@@ -1,4 +1,4 @@
-package com.naveed.samples.ui.activities
+package com.naveed.samples.view
 
 import android.os.Bundle
 

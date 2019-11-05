@@ -7,11 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.View;
-import android.widget.Spinner;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 import butterknife.Unbinder;
 
 
@@ -30,8 +26,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        EventBus.getDefault().register(this);
-        //setTag();
+
 
     }
 
@@ -57,7 +52,6 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        EventBus.getDefault().unregister(this);
         super.onDestroyView();
         if (mUnbinder != null)
             mUnbinder.unbind();
@@ -134,7 +128,7 @@ public abstract class BaseFragment extends Fragment {
     }
 */
 
-    @Subscribe
+
     public void callBack(String value) {
 
     }
@@ -172,14 +166,4 @@ public abstract class BaseFragment extends Fragment {
     }
 
 
-    protected void showAlert(int id, String message, String btnText) {
-        //((BaseActivity) getActivity()).showAlertDialog(id, message, btnText);
-    }
-
-    protected void spinnerError(Spinner spinner) {
-        ((BaseActivity) getActivity()).spinnerError(spinner);
-    }
-
-    public void onAlertDismiss(int actionId) {
-    }
 }

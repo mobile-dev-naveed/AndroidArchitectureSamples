@@ -1,4 +1,4 @@
-package com.naveed.samples.ui.activities
+package com.naveed.samples.view
 
 import android.app.SearchManager
 import android.content.Context
@@ -14,56 +14,47 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
-import android.widget.Toast
-
-import org.greenrobot.eventbus.Subscribe
-
-import java.util.ArrayList
 
 import com.naveed.samples.R
-import com.naveed.samples.apputils.events.SingleDataEvent
-import com.naveed.samples.data.models.ListMoviesResp
-import com.naveed.samples.data.models.MovieItem
-import com.naveed.samples.data.network.EventBusKeys
-import com.naveed.samples.data.network.NetworkLayer
 import com.naveed.samples.helper.base.BaseActivity
 import com.naveed.samples.helper.utils.EndlessRecyclerViewScrollListener
 import com.naveed.samples.helper.utils.NetworkConnection
-import com.naveed.samples.ui.adapters.MoviesAdapter
 import butterknife.ButterKnife
+import com.naveed.samples.presenters.MoviesListPresenter
+import com.naveed.samples.view.MovieDetailActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : BaseActivity() {
+class MoviesList : BaseActivity(),MoviesView{
 
-    var types = arrayOf("Popular", "Top rated", "Upcoming", "Now playing")
-    var typesKeys = arrayOf("popular", "top_rated", "upcoming", "now_playing")
-    internal var typeSelected = "popular"
+
     internal var typeSelectedTemp = "popular"
     private var moviesAdapter: MoviesAdapter? = null
-    private val mMoviesList = ArrayList<MovieItem>()
 
-    private var loadMore = true
-    private var pageIndex = 1
     private val isGrid = false
     private var query = ""
+    lateinit var moviePresenter:MoviesListPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ButterKnife.bind(this)
+        // presenter
+        moviePresenter = MoviesListPresenter(this)
+
         setRecyclerAdapter()
         setUpSpinner()
         addListeners()
     }
 
     private fun setRecyclerAdapter() {
-        moviesAdapter = MoviesAdapter(this, mMoviesList, isGrid)
+        moviesAdapter = MoviesAdapter(this, moviePresenter.mMoviesList, isGrid)
         //moviesAdapter.isVerticalList = true;
         setAsList()
         recyclerView!!.adapter = moviesAdapter
         moviesAdapter!!.setItemSelectedListener { parent, view, position, id ->
             val bundle = Bundle()
-            bundle.putParcelable("data", mMoviesList[position])
+            bundle.putParcelable("data", moviePresenter.mMoviesList[position])
             launchActivity(MovieDetailActivity::class.java, bundle)
         }
 
@@ -71,11 +62,11 @@ class MainActivity : BaseActivity() {
 
     private fun setUpSpinner() {
         val dataAdapter = ArrayAdapter(this,
-                android.R.layout.simple_spinner_dropdown_item, types)
+                android.R.layout.simple_spinner_dropdown_item, moviePresenter.types)
         spFilter!!.adapter = dataAdapter
         spFilter!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                typeSelectedTemp = typesKeys[position]
+                typeSelectedTemp = moviePresenter.typesKeys[position]
                 onClickedFetchBtn()
             }
 
@@ -97,10 +88,7 @@ class MainActivity : BaseActivity() {
         recyclerView!!.layoutManager = layoutManager
         val scrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                if (loadMore) {
-                    pageIndex++
-                    requestMovies()
-                }
+               requestData()
             }
         }
         recyclerView!!.addOnScrollListener(scrollListener)
@@ -117,7 +105,8 @@ class MainActivity : BaseActivity() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(s: String): Boolean {
-                this@MainActivity.query = s
+                this@MoviesList.query = s
+                moviePresenter.clearMoviesList()
                 requestData()
                 return false
             }
@@ -128,7 +117,7 @@ class MainActivity : BaseActivity() {
             }
         })
         searchView.setOnCloseListener {
-            this@MainActivity.query = ""
+            this@MoviesList.query = ""
             filterView!!.visibility = View.VISIBLE
             requestData()
             false
@@ -143,7 +132,7 @@ class MainActivity : BaseActivity() {
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 filterView!!.visibility = View.VISIBLE
-                this@MainActivity.query = ""
+                this@MoviesList.query = ""
                 searchView.setQuery("", false)
                 requestData()
                 return true
@@ -166,64 +155,41 @@ class MainActivity : BaseActivity() {
 
 
     protected fun onClickedFetchBtn() {
-        if (typeSelected != typeSelectedTemp) {
-            mMoviesList.clear()
-            moviesAdapter!!.notifyDataSetChanged()
-            pageIndex = 1
+        if (moviePresenter.typeSelected != typeSelectedTemp) {
+           moviePresenter.clearMoviesList()
         }
-        typeSelected = typeSelectedTemp
-        requestMovies()
+        moviePresenter.typeSelected = typeSelectedTemp
+        requestData()
     }
 
     // Api calls
     private fun requestData() {
-        mMoviesList.clear()
-        pageIndex = 1
+        //moviePresenter.clearMoviesList()
+        if(NetworkConnection.isConnection(this)) {
+            showProgressDialog(R.string.please_wait)
+            moviePresenter.requestMovies(query)
+
+
+        }else onError(getString(R.string.no_internet))
+    }
+
+    override fun updateMoviesList() {
         moviesAdapter!!.notifyDataSetChanged()
-        if (query.isEmpty()) {
-            requestMovies()
-        } else {
-            searchMovies(query)
-        }
+        dismissProgress()
+    }
+    override fun onError(error: String) {
+        showToast(error)
+        dismissProgress()
     }
 
-    private fun requestMovies() {
-        if (NetworkConnection.isConnection(this)) {
-            showProgressDialog(R.string.please_wait)
-            NetworkLayer.instance.getMoviesList(typeSelected, pageIndex)
-        } else {
-            Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
-        }
+    override fun onStart() {
+        super.onStart()
+        //moviePresenter.registerEventBus()
     }
 
-    private fun searchMovies(query: String) {
-        if (NetworkConnection.isConnection(this)) {
-            showProgressDialog(R.string.please_wait)
-            NetworkLayer.instance.getSearchMoviesList(query, pageIndex)
-        } else {
-            Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
-        }
+    override fun onStop() {
+        super.onStop()
+        //moviePresenter.unregisterEventBus()
     }
-
-
-    // api requests
-    @Subscribe
-    fun onApiResponse(event: SingleDataEvent<*>) {
-        if (event.eventId == EventBusKeys.MOVIE_LIST) {
-            dismissProgress()
-            if (event.status) {
-                val resp = event.data as ListMoviesResp
-                if (pageIndex == resp.totalPages!!.toInt()) {
-                    loadMore = false
-                }
-                mMoviesList.addAll(resp.results!!)
-                moviesAdapter!!.notifyDataSetChanged()
-            } else {
-                showToast(event.message)
-            }
-
-        }
-    }
-
 
 }

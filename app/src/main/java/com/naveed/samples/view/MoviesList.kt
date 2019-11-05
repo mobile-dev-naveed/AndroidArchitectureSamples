@@ -22,6 +22,7 @@ import com.naveed.samples.helper.utils.NetworkConnection
 import butterknife.ButterKnife
 import com.naveed.samples.presenters.MoviesListPresenter
 import com.naveed.samples.view.MovieDetailActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MoviesList : BaseActivity(),MoviesView{
@@ -167,6 +168,8 @@ class MoviesList : BaseActivity(),MoviesView{
         if(NetworkConnection.isConnection(this)) {
             showProgressDialog(R.string.please_wait)
             moviePresenter.requestMovies(query)
+
+
         }else onError(getString(R.string.no_internet))
     }
 
@@ -181,12 +184,12 @@ class MoviesList : BaseActivity(),MoviesView{
 
     override fun onStart() {
         super.onStart()
-        moviePresenter.registerEventBus()
+        //moviePresenter.registerEventBus()
     }
 
     override fun onStop() {
         super.onStop()
-        moviePresenter.unregisterEventBus()
+        //moviePresenter.unregisterEventBus()
     }
 
 }
