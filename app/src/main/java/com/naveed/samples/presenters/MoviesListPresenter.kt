@@ -8,21 +8,28 @@ import com.naveed.samples.view.MoviesView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-class MoviesListPresenter constructor(view: MoviesView) : BasePresenter(), MoviesPresenter {
+class MoviesListPresenter @Inject constructor() : BasePresenter<MoviesView>(), MoviesPresenter {
+
+    lateinit var moviesView : MoviesView
+
+    override fun onAttach(mvpView: MoviesView) {
+        moviesView = mvpView
+    }
+
 
     var pageIndex = 1
     var loadMore = false
 
     var mMoviesList: MutableList<MovieItem> = ArrayList()
-    val moviesView = view
+
 
 
     val types = arrayOf("Popular", "Top rated", "Upcoming", "Now playing")
     val typesKeys = arrayOf("popular", "top_rated", "upcoming", "now_playing")
 
     var typeSelected: String = types[0]
-    private val bag = CompositeDisposable()
 
 
     @SuppressLint("CheckResult")
@@ -66,28 +73,6 @@ class MoviesListPresenter constructor(view: MoviesView) : BasePresenter(), Movie
         loadMore = true
         mMoviesList.clear()
         moviesView.updateMoviesList()
-    }
-
-
-//    @Subscribe
-//    fun onApiResponse(event: SingleDataEvent<*>) {
-//        if (event.eventId == EventBusKeys.MOVIE_LIST) {
-//            if (event.status) {
-//                val resp = event.data as ListMoviesResp
-//                if (pageIndex == resp.totalPages!!.toInt()) {
-//                    loadMore = false
-//                }
-//                mMoviesList.addAll(resp.results!!)
-//                moviesView.updateMoviesList()
-//            } else {
-//                moviesView.onError(event.message)
-//            }
-//
-//        }
-//    }
-
-    fun clearDisposedBy() {
-        bag.clear()
     }
 
 }

@@ -14,7 +14,7 @@ class SplashActivity : SplashBase() {
     }
 
     override fun onDelayComplete() {
-        launchActivity(MoviesList::class.java)
+        launchActivity(MoviesListActivity::class.java)
         finish()
     }
 }

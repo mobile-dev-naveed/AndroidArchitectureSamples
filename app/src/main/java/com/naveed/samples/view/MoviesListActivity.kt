@@ -20,12 +20,13 @@ import com.naveed.samples.helper.base.BaseActivity
 import com.naveed.samples.helper.utils.EndlessRecyclerViewScrollListener
 import com.naveed.samples.helper.utils.NetworkConnection
 import butterknife.ButterKnife
+import com.naveed.samples.dagger.DaggerMovieListComponent
+import com.naveed.samples.dagger.MovieListComponent
 import com.naveed.samples.presenters.MoviesListPresenter
-import com.naveed.samples.view.MovieDetailActivity
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
-class MoviesList : BaseActivity(),MoviesView{
+class MoviesListActivity : BaseActivity(),MoviesView{
 
 
     internal var typeSelectedTemp = "popular"
@@ -33,23 +34,29 @@ class MoviesList : BaseActivity(),MoviesView{
 
     private val isGrid = false
     private var query = ""
+
+    @Inject
     lateinit var moviePresenter:MoviesListPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ButterKnife.bind(this)
-        // presenter
-        moviePresenter = MoviesListPresenter(this)
+
+        initDagger()
 
         setRecyclerAdapter()
         setUpSpinner()
         addListeners()
     }
 
+    fun initDagger(){
+        DaggerMovieListComponent.builder().build().inject(this)
+        moviePresenter.onAttach(this)
+    }
+
     private fun setRecyclerAdapter() {
         moviesAdapter = MoviesAdapter(this, moviePresenter.mMoviesList, isGrid)
-        //moviesAdapter.isVerticalList = true;
         setAsList()
         recyclerView!!.adapter = moviesAdapter
         moviesAdapter!!.setItemSelectedListener { parent, view, position, id ->
@@ -105,7 +112,7 @@ class MoviesList : BaseActivity(),MoviesView{
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(s: String): Boolean {
-                this@MoviesList.query = s
+                this@MoviesListActivity.query = s
                 moviePresenter.clearMoviesList()
                 requestData()
                 return false
@@ -117,7 +124,7 @@ class MoviesList : BaseActivity(),MoviesView{
             }
         })
         searchView.setOnCloseListener {
-            this@MoviesList.query = ""
+            this@MoviesListActivity.query = ""
             filterView!!.visibility = View.VISIBLE
             requestData()
             false
@@ -132,7 +139,7 @@ class MoviesList : BaseActivity(),MoviesView{
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 filterView!!.visibility = View.VISIBLE
-                this@MoviesList.query = ""
+                this@MoviesListActivity.query = ""
                 searchView.setQuery("", false)
                 requestData()
                 return true
@@ -168,8 +175,6 @@ class MoviesList : BaseActivity(),MoviesView{
         if(NetworkConnection.isConnection(this)) {
             showProgressDialog(R.string.please_wait)
             moviePresenter.requestMovies(query)
-
-
         }else onError(getString(R.string.no_internet))
     }
 
@@ -182,14 +187,5 @@ class MoviesList : BaseActivity(),MoviesView{
         dismissProgress()
     }
 
-    override fun onStart() {
-        super.onStart()
-        //moviePresenter.registerEventBus()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        //moviePresenter.unregisterEventBus()
-    }
 
 }

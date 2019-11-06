@@ -4,8 +4,11 @@ import com.naveed.samples.data.models.ListMoviesResp
 import com.naveed.samples.helper.utils.AppConstants
 import io.reactivex.Observable
 import io.reactivex.Single
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class NetworkLayer private constructor() {
+@Singleton
+class NetworkLayer @Inject constructor(){
     private val unknownError = "Unknown Error Occurred"
 
 

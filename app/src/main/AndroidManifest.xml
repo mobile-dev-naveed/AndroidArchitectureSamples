@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name="com.naveed.samples.view.MoviesList"
+            android:name="com.naveed.samples.view.MoviesListActivity"
             android:screenOrientation="portrait">
 
             <meta-data

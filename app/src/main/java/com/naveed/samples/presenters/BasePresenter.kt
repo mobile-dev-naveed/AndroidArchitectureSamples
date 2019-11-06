@@ -2,13 +2,9 @@ package com.naveed.samples.presenters
 
 import org.greenrobot.eventbus.EventBus
 
-open class BasePresenter {
+abstract class BasePresenter<T> {
 
-//    fun registerEventBus() {
-//        EventBus.getDefault().register(this)
-//    }
-//
-//    fun unregisterEventBus(){
-//        EventBus.getDefault().unregister(this)
-//    }
+
+    abstract fun onAttach(view: T)
+
 }
